@@ -1,0 +1,49 @@
+{
+    "shoes": [
+        {
+            "id": 1,
+            "name": "Nike Air VaporMax Flyknit 3",
+            "category": "Men",
+            "size": "UK 9",
+            "colour": "Black",
+            "stockState": 1,
+            "customerInitials": "JH"
+        },
+        {
+            "id": 2,
+            "name": "adidas Originals OZWEEGO",
+            "category": "Woman",
+            "size": "UK 9",
+            "colour": "Black",
+            "stockState": 1,
+            "customerInitials": "JH"
+        },
+        {
+            "id": 3,
+            "name": "Nike Air Max 95 SE",
+            "category": "Men",
+            "size": "UK 9",
+            "colour": "Blue",
+            "stockState": 3,
+            "customerInitials": "JH"
+        },
+        {
+            "id": 4,
+            "name": "Nike Air Max 95 SE",
+            "category": "Men",
+            "size": "UK 9",
+            "colour": "Blue",
+            "stockState": 2,
+            "customerInitials": "JH"
+        },
+        {
+            "id": 5,
+            "name": "15 Year Old Boot",
+            "category": "Men",
+            "size": "UK 13",
+            "colour": "Black/Muddy",
+            "stockState": 1,
+            "customerInitials": "JH"
+        }
+    ]
+}

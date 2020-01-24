@@ -1,0 +1,27 @@
+.shoe-tile {
+    background-color: blue;
+
+    .ready-to-try {
+        background-color: green;
+        height: 10px;
+        width: 100%;
+    }
+
+    .on-the-way {
+        background-color: lightblue;
+        height: 10px;
+        width: 100%;
+    }
+
+    .in-the-queue {
+        background-color: orange;
+        height: 10px;
+        width: 100%;
+    }
+
+    .out-of-stock {
+        background-color: red;
+        height: 10px;
+        width: 100%;
+    }
+}
