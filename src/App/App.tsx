@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.scss";
 import mockData from "./mock-data.json";
+import Pagination from "./Pagination/Pagination";
 import ShoeTile from "./ShoeTile/ShoeTile";
 
 /**
@@ -10,6 +11,7 @@ import ShoeTile from "./ShoeTile/ShoeTile";
  * sure if using RxJS would be appropriate, as such I omitted using it.
  */
 export default class App extends React.Component<any, any> {
+  private currentAmountOfShoes: number = 0;
 
   constructor(props: any) {
     super(props);
@@ -19,14 +21,27 @@ export default class App extends React.Component<any, any> {
   }
 
   private renderTiles(filterState: number) {
+    this.currentAmountOfShoes = 0;
     if (filterState !== 0) {
-      return mockData.shoes.map(shoe =>
-        filterState === shoe.stockState ? <ShoeTile key={shoe.id} shoeData={shoe}/> : null);
+      return mockData.shoes.map(shoe => {
+        if (filterState === shoe.stockState) {
+          this.currentAmountOfShoes += 1;
+          return <ShoeTile key={shoe.id} shoeData={shoe}/>;
+        }
+      });
     } else {
+      this.currentAmountOfShoes = mockData.shoes.length;
       return mockData.shoes.map(shoe => <ShoeTile key={shoe.id} shoeData={shoe}/>);
     }
   }
 
+  private test() {
+    console.log("hi from app comp");
+  }
+
+  /**
+   * Turn filter buttons into component Alex
+   */
   public render(): any {
     return (
       <div className="App">
@@ -38,13 +53,7 @@ export default class App extends React.Component<any, any> {
           <button onClick={() => this.setState({filterState: 4})}>out of stock</button>
         </div>
         {this.renderTiles(this.state.filterState)}
-        <div>
-          {
-            mockData.shoes.map(shoe => {
-              return <span> x </span>;
-            })
-          }
-        </div>
+        <Pagination itemAmount={this.currentAmountOfShoes} testFunc={this.test} />
       </div>
     );
   }

@@ -33,7 +33,6 @@ export default class ShoeTile extends React.Component<IShoe, any> {
 
     constructor(props: { shoeData: IShoe } & any) {
         super(props);
-        console.log(props.shoeData);
     }
 
     private getStockStateClass(stockStateNumber: number): string {
