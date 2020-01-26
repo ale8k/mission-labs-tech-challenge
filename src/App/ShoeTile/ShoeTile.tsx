@@ -1,28 +1,7 @@
 import React from "react";
+import { StockState } from "../enums/StockState";
+import IShoe from "../interfaces/IShoe";
 import "./ShoeTile.scss";
-
-/**
- * Please note, I typically place enums/interfaces in separate files.
- * However, for this test it feels unncessary.
- */
-enum StockState {
-    ReadyToTry = 1,
-    OnTheWay,
-    InTheQueue,
-    OutOfStock
-}
-
-interface IShoe {
-    shoeData: {
-        id: number;
-        name: string;
-        category: string;
-        size: string;
-        colour: string;
-        stockState: number;
-        customerInitials: string;
-    };
-}
 
 /**
  * Currently we presume all shoes come back successfully, but we would obviously

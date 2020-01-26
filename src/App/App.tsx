@@ -4,18 +4,6 @@ import mockData from "./mock-data.json";
 import Pagination from "./Pagination/Pagination";
 import ShoeTile from "./ShoeTile/ShoeTile";
 
-interface IShoe {
-  shoeData: {
-      id: number;
-      name: string;
-      category: string;
-      size: string;
-      colour: string;
-      stockState: number;
-      customerInitials: string;
-  };
-}
-
 /**
  * I'd like to note that filtering via an observable in RxJS would have
  * been much, much cleaner. We could simply pass a setState through the observable, a filter
@@ -25,11 +13,25 @@ interface IShoe {
  */
 export default class App extends React.Component<any, any> {
   // fix typings here
-  private indexesToDisplay: any = [];
   /**
-   * Based on the filter, the current amount of shoes being paginated.
+   * The indexes of the shoes we wish to display, based on our current pagination
    */
-  private currentTotalAmountOfShoes: number = 0;
+  private indexesToDisplay: any = [];
+
+  /**
+   * Based on the filter, the current amount of shoes being paginated
+   */
+  private currentTotalAmountOfShoes: number = mockData.shoes.length;
+
+  /**
+   * Current active page number
+   */
+  private currentPageNumber = 1;
+
+  /**
+   * Pagination interval timer
+   */
+  private paginationTimer: NodeJS.Timeout = setTimeout(() => null, 0);
 
   constructor(props: any) {
     super(props);
@@ -37,6 +39,7 @@ export default class App extends React.Component<any, any> {
     this.state = {
       filterState: 0
     };
+
     // Initial render
     this.updatePagination(1);
   }
@@ -61,17 +64,42 @@ export default class App extends React.Component<any, any> {
       // Therefore we update our total amount field here, a little bit messy
       // but feels logical enough.
       this.currentTotalAmountOfShoes = filteredShoeList.length;
+      // We clear our pagination timer, and immediately restart it.
+      this.clearPaginationCarouselTimer();
+      this.beginPaginationCarousel(this.currentTotalAmountOfShoes);
       shoesToDisplayForPage = this.filterShoesPerPagination(this.indexesToDisplay, filteredShoeList);
     } else {
       // Again, I know this is messy but it works well enough :).
       this.currentTotalAmountOfShoes = mockData.shoes.length;
+      // We clear our pagination timer, and immediately restart it.
+      this.clearPaginationCarouselTimer();
+      this.beginPaginationCarousel(this.currentTotalAmountOfShoes);
       shoesToDisplayForPage = this.filterShoesPerPagination(this.indexesToDisplay, mockData.shoes);
     }
 
     return shoesToDisplayForPage.map((shoe: any, index: number) => {
-      return <ShoeTile key={shoe.id} shoeData={shoe}/>;
+      return <ShoeTile key={shoe.id} shoeData={shoe} />;
     });
 
+  }
+
+  private beginPaginationCarousel(shoeTotal: number) {
+    const totalPages = Math.ceil(shoeTotal / 4);
+
+    if (totalPages !== 1) {
+      this.paginationTimer = setTimeout(() => {
+        if (this.currentPageNumber === totalPages)
+          this.currentPageNumber = 0;
+        this.currentPageNumber++;
+        this.updatePagination(this.currentPageNumber);
+        console.log(this.currentPageNumber);
+      }, 5000);
+    }
+
+  }
+
+  private clearPaginationCarouselTimer(): void {
+    clearTimeout(this.paginationTimer);
   }
 
   /**
@@ -99,6 +127,10 @@ export default class App extends React.Component<any, any> {
    */
   public updatePagination = (pageNumber: number): any => {
     this.indexesToDisplay = this.getSpecificPageTileIndexes(pageNumber);
+    // Reset the page number state, so our carousel continues from here
+    this.currentPageNumber = pageNumber;
+    // Wonder if there's a better way to force the component to re-render?
+    // This feels a little wrong... lol.
     this.setState({});
   }
 
@@ -110,26 +142,38 @@ export default class App extends React.Component<any, any> {
     const indexesToDisplay = [];
     let indexStartPoint = 0;
 
-    // change this to switch statement, its ugly as fuck
-    if (pageNumber === 1) {
-      indexesToDisplay.push(pageNumber - 1, 1, 2, 3);
-      return indexesToDisplay;
-    } else if (pageNumber === 2) {
-      indexesToDisplay.push(pageNumber + 2, 5, 6, 7);
-      return indexesToDisplay;
-    } else {
-      let localMultiplier = 0;
-      for (let i = 2; i < pageNumber; i++) {
-        localMultiplier++;
-      }
-      indexStartPoint = (localMultiplier * 2) + (pageNumber * 2);
+    switch (pageNumber) {
+      case 1:
+        indexesToDisplay.push(pageNumber - 1, 1, 2, 3);
+        return indexesToDisplay;
+      case 2:
+        indexesToDisplay.push(pageNumber + 2, 5, 6, 7);
+        return indexesToDisplay;
+      default:
+        let localMultiplier = 0;
+        for (let i = 2; i < pageNumber; i++) {
+          localMultiplier++;
+        }
+        indexStartPoint = (localMultiplier * 2) + (pageNumber * 2);
 
-      for (let i = 0; i < 4; i++) {
-        indexesToDisplay.push(indexStartPoint);
-        indexStartPoint++;
-      }
-      return indexesToDisplay;
+        for (let i = 0; i < 4; i++) {
+          indexesToDisplay.push(indexStartPoint);
+          indexStartPoint++;
+        }
+        return indexesToDisplay;
+
     }
+  }
+
+  private updateFilterStateAndPageLocation(stateNumber: number): void {
+    // We reset our page number to 1, so our carousel may stop
+    // in the case there is only 1 page.
+    this.currentPageNumber = 1;
+    this.updatePagination(1);
+    // I'm aware we're performing multiple rerenders, I did look at a PureComponent
+    // and ShouldComponentUpdate lifecycle method but I've already done it this way sadly,
+    // I hope it's ok I've left it like this.
+    this.setState({ filterState: stateNumber });
   }
 
   /**
@@ -139,11 +183,11 @@ export default class App extends React.Component<any, any> {
     return (
       <div className="App">
         <div className="filter-buttons">
-          <button onClick={() => this.setState({filterState: 0})}>show all</button>
-          <button onClick={() => this.setState({filterState: 1})}>ready</button>
-          <button onClick={() => this.setState({filterState: 2})}>on the way</button>
-          <button onClick={() => this.setState({filterState: 3})}>in the queue</button>
-          <button onClick={() => this.setState({filterState: 4})}>out of stock</button>
+          <button onClick={() => this.updateFilterStateAndPageLocation(0)}>show all</button>
+          <button onClick={() => this.updateFilterStateAndPageLocation(1)}>ready</button>
+          <button onClick={() => this.updateFilterStateAndPageLocation(2)}>on the way</button>
+          <button onClick={() => this.updateFilterStateAndPageLocation(3)}>in the queue</button>
+          <button onClick={() => this.updateFilterStateAndPageLocation(4)}>out of stock</button>
         </div>
         {this.renderTiles(this.state.filterState)}
         <Pagination itemAmount={this.currentTotalAmountOfShoes} newPaginationPage={this.updatePagination} />
