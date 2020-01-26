@@ -4,6 +4,18 @@ import mockData from "./mock-data.json";
 import Pagination from "./Pagination/Pagination";
 import ShoeTile from "./ShoeTile/ShoeTile";
 
+interface IShoe {
+  shoeData: {
+      id: number;
+      name: string;
+      category: string;
+      size: string;
+      colour: string;
+      stockState: number;
+      customerInitials: string;
+  };
+}
+
 /**
  * I'd like to note that filtering via an observable in RxJS would have
  * been much, much cleaner. We could simply pass a setState through the observable, a filter
@@ -12,43 +24,44 @@ import ShoeTile from "./ShoeTile/ShoeTile";
  * pure React :) - no libraries or plugins either.
  */
 export default class App extends React.Component<any, any> {
-  private currentAmountOfShoes: number = 0;
-  private currentPage: number = 1;
-  private currentFilteredShoes: any = [];
+  // fix typings here
+  private indexesToDisplay: any = [];
 
   constructor(props: any) {
     super(props);
 
-    this.currentFilteredShoes = mockData.shoes;
-
     this.state = {
       filterState: 0
     };
-
-    // this.test.bind(this);
+    // Initial render
+    this.updatePagination(1);
   }
 
-  private idk(index: number) {
-    // 1 = 4 / 0 - 3
-    // 2 = 8 / 4 - 7
-
-  }
-
+  /**
+   * Renders, filters and paginates the tiles.
+   * Logic needs breaking down, perhaps moving.
+   * @param filterState the shoes stock state
+   */
   private renderTiles(filterState: number) {
-    this.currentAmountOfShoes = 0;
+    // We reset this each new render, incase we change our filter.
+    const shoesToDisplayForPage: any = [];
+
     if (filterState !== 0) {
-      return this.currentFilteredShoes.map((shoe: any, index: number) => {
+      return mockData.shoes.map((shoe: any, index: number) => {
         if (filterState === shoe.stockState) {
-          console.log(index);
           return <ShoeTile key={shoe.id} shoeData={shoe}/>;
         }
       });
     } else {
-      // Ew, gotta do this better. Just ew, ew ew ew ewwwwwwwwww.
-      this.currentAmountOfShoes = mockData.shoes.length;
-      this.currentFilteredShoes = mockData.shoes;
+      this.indexesToDisplay.map((shoeIndex: any) => {
+        mockData.shoes.map((shoe, index) => {
+          if (shoeIndex === index) {
+            shoesToDisplayForPage.push(shoe);
+          }
+        });
+      });
 
-      return this.currentFilteredShoes.map((shoe: any, index: number) => {
+      return shoesToDisplayForPage.map((shoe: any, index: number) => {
           return <ShoeTile key={shoe.id} shoeData={shoe}/>;
       });
 
@@ -56,29 +69,23 @@ export default class App extends React.Component<any, any> {
   }
 
   // Lexical scoping ruined ordinary method declaration here...
+  /**
+   * Updates our pagination fields (indexesToDisplay) and rerenders the entire application
+   * Probably need to rerender elsewhere ideally.
+   */
   public updatePagination = (pageNumber: number): any => {
-    this.currentPage = pageNumber;
+    this.indexesToDisplay = this.getSpecificPageTileIndexes(pageNumber);
+    this.setState({});
+  }
 
-    /**
-     * Pagination pattern example:
-     * 0  // 1 -- -1  // Doesn't apply, edge case
-     * 4  // 2 -- +2  // Doesn't apply, edge case
-     * 8  // 3 -- +5  // 3 -1 1 times = 2, 1 * 2 = 2 + 3 = 5, 5 + 3 = 8
-     * 12 // 4 -- +8  // 4 -1 2 times = 2, 2 * 2 = 4 + 4 = 8, 8 + 4 = 12
-     * 16 // 5 -- +11 // 5 -1 3 times = 2, 3 * 2 = 6 + 5 = 11, 11 + 5 = 16
-     * 20 // 6 -- +14 // 6 -1 4 times = 2, 4 * 2 = 8 + 6 = 14, 14 + 6 = 20 -- end number is index starting point :).
-     * 24 // 7 -- +17 // 7 -1 5 times = 2, 5 * 2 = 10 + 7 = 17, 17 + 7 = 24
-     * 28 // 8 -- +20 // 8 -1 6 times = 2, 6 * 2 = 12 + 8 = 20, 20 + 8 = 28
-     * 32 // 9 -- +23 //
-     */
-
+  /**
+   * Gets the indexes to be displayed for the page number clicked
+   * @param pageNumber the current page the user is on/clicked
+   */
+  private getSpecificPageTileIndexes(pageNumber: number): number[] {
     const indexesToDisplay = [];
     let indexStartPoint = 0;
 
-    /**
-     * The initial pages 1 and 2 don't follow the conventional pattern of the rest of the pages,
-     * hence they're hard coded. Refer to pagination pattern above :).
-     */
     // change this to switch statement, its ugly as fuck
     if (pageNumber === 1) {
       indexesToDisplay.push(pageNumber - 1, 1, 2, 3);
@@ -97,11 +104,8 @@ export default class App extends React.Component<any, any> {
         indexesToDisplay.push(indexStartPoint);
         indexStartPoint++;
       }
-      console.log(indexesToDisplay);
       return indexesToDisplay;
-
     }
-
   }
 
   /**
@@ -118,7 +122,7 @@ export default class App extends React.Component<any, any> {
           <button onClick={() => this.setState({filterState: 4})}>out of stock</button>
         </div>
         {this.renderTiles(this.state.filterState)}
-        <Pagination itemAmount={this.currentAmountOfShoes} newPaginationPage={this.updatePagination} />
+        <Pagination itemAmount={mockData.shoes.length} newPaginationPage={this.updatePagination} />
       </div>
     );
   }
