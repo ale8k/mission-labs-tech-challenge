@@ -1,4 +1,49 @@
+@import "./styles/variables.scss";
+/**
+  FYI This is purely desktop based.
+**/
 .App {
+  display: grid;
+  height: 90vh;
+  min-height: 500px;
+  width: 95vw;
+  margin: auto;
+  grid-template-columns: 15% 15% 15% 15% 15% 15% 10%;
+  grid-template-rows: 20% 60% 20%;
   text-align: center;
+  background-color: $primary-grey;
+
+  .filter-buttons-container {
+    display: flex;
+    align-items: flex-end;
+    grid-column: 4 / span 3;
+    margin: 15px;
+    padding: 10px;
+
+    .filter-button {
+      display: flex;
+      margin: 0 5px;
+      cursor: pointer;
+      user-select: none;
+      align-items: center;
+      white-space: nowrap;
+      color: $primary-text;
+      font-size: 0.6em;
+    }
+  }
+
+  .tile-container {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+
+    grid-row: 2;
+    grid-column: 2 / span 5;
+  }
+
+  .pagination-container {
+    grid-row: 3;
+    grid-column: 1 / span 7;
+  }
 }
 

@@ -1,27 +1,80 @@
+@import "../styles/variables.scss";
+
+@mixin stock-status-styles {
+  height: 100%;
+  width: 2%;
+  margin-right: 15px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+@mixin general-text-styles {
+  margin-left: 4%;
+  width: 10%;
+  text-align: left;
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
 .shoe-tile {
-    background-color: blue;
+  display: flex;
+  align-items: center;
+  height: 22%;
+  min-height: 22%;
+  margin: 6px;
+  border: 1px solid $secondary-grey;
+  border-radius: 5px;
 
-    .ready-to-try {
-        background-color: green;
-        height: 10px;
-        width: 100%;
-    }
 
-    .on-the-way {
-        background-color: lightblue;
-        height: 10px;
-        width: 100%;
-    }
+  .ready-to-try {
+    background-color: $primary-green;
+    @include stock-status-styles;
+  }
 
-    .in-the-queue {
-        background-color: orange;
-        height: 10px;
-        width: 100%;
-    }
+  .on-the-way {
+    background-color: lightblue;
+    @include stock-status-styles;
+  }
 
-    .out-of-stock {
-        background-color: red;
-        height: 10px;
-        width: 100%;
-    }
+  .in-the-queue {
+    background-color: orange;
+    @include stock-status-styles;
+  }
+
+  .out-of-stock {
+    background-color: red;
+    @include stock-status-styles;
+  }
+
+  .shoe-tile-image {
+    border-radius: 5px;
+    height: 90%;
+    width: 12%;
+  }
+
+  .shoe-tile-primarytext {
+    color: $primary-text;
+    @include general-text-styles;
+  }
+
+  .shoe-tile-subtext {
+    color: $secondary-text;
+    @include general-text-styles;
+  }
+
+  .shoe-tile-initial-block {
+    display: flex;
+    color: $primary-text;
+    font-weight: 700;
+    align-items: center;
+    border-radius: 10px;
+    border: 1px solid $secondary-grey;
+    justify-content: center;
+    height: 50%;
+    width: 8%;
+    margin-left: auto;
+    margin-right: 5%;
+  }
 }

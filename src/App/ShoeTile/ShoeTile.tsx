@@ -36,11 +36,12 @@ export default class ShoeTile extends React.Component<IShoe, any> {
                 {/** Presume this would be a mock API request / static resource.
                   * We would also have a counter measure for failure requests.
                   */}
-                <img src={require(`../../sprites/${this.props.shoeData.id}.jpg`)} width={"50px"}/>
-                <div>{this.props.shoeData.name}</div>
-                <div>{this.props.shoeData.category}</div>
-                <div>{this.props.shoeData.size}</div>
-                <div>{this.props.shoeData.customerInitials}</div>
+                <img className="shoe-tile-image" src={require(`../../sprites/${this.props.shoeData.id}.jpg`)}/>
+                <div className="shoe-tile-primarytext">{this.props.shoeData.name}</div>
+                <div className="shoe-tile-subtext">Category: <br/>{this.props.shoeData.category}</div>
+                <div className="shoe-tile-subtext">Size: <br/>{this.props.shoeData.size}</div>
+                <div className="shoe-tile-subtext">Colour: <br/>{this.props.shoeData.colour}</div>
+                <div className="shoe-tile-initial-block">{this.props.shoeData.customerInitials}</div>
             </div>
         );
     }

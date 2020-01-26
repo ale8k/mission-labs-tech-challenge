@@ -40,6 +40,9 @@ export default class App extends React.Component<any, any> {
       filterState: 0
     };
 
+  }
+
+  public componentDidMount(): void {
     // Initial render
     this.updatePagination(1);
   }
@@ -92,7 +95,6 @@ export default class App extends React.Component<any, any> {
           this.currentPageNumber = 0;
         this.currentPageNumber++;
         this.updatePagination(this.currentPageNumber);
-        console.log(this.currentPageNumber);
       }, 5000);
     }
 
@@ -161,7 +163,6 @@ export default class App extends React.Component<any, any> {
           indexStartPoint++;
         }
         return indexesToDisplay;
-
     }
   }
 
@@ -182,15 +183,53 @@ export default class App extends React.Component<any, any> {
   public render(): any {
     return (
       <div className="App">
-        <div className="filter-buttons">
-          <button onClick={() => this.updateFilterStateAndPageLocation(0)}>show all</button>
-          <button onClick={() => this.updateFilterStateAndPageLocation(1)}>ready</button>
-          <button onClick={() => this.updateFilterStateAndPageLocation(2)}>on the way</button>
-          <button onClick={() => this.updateFilterStateAndPageLocation(3)}>in the queue</button>
-          <button onClick={() => this.updateFilterStateAndPageLocation(4)}>out of stock</button>
+        <div className="filter-buttons-container">
+
+          <div className="filter-button" onClick={() => this.updateFilterStateAndPageLocation(0)}>
+            <svg height="20" width="27">
+              <circle cx="10" cy="10" r="10" stroke="white" stroke-width="1" fill="white" />
+            </svg>
+            <span>SHOW ALL</span>
+          </div>
+
+          <div className="filter-button" onClick={() => this.updateFilterStateAndPageLocation(1)}>
+            <svg height="20" width="27">
+              <circle cx="10" cy="10" r="10" stroke="white" stroke-width="1" fill="#49D4B1" />
+            </svg>
+            <span>READY TO TRY</span>
+          </div>
+
+          <div className="filter-button" onClick={() => this.updateFilterStateAndPageLocation(2)}>
+            <svg height="20" width="27">
+              <circle cx="10" cy="10" r="10" stroke="black" stroke-width="1" fill="#68A9DF" />
+            </svg>
+            <span>ON THE WAY</span>
+          </div>
+
+          <div className="filter-button" onClick={() => this.updateFilterStateAndPageLocation(3)}>
+            <svg height="20" width="27">
+              <circle cx="10" cy="10" r="10" stroke="black" stroke-width="1" fill="#FD672F" />
+            </svg>
+            <span>IN THE QUEUE</span>
+          </div>
+
+          <div className="filter-button" onClick={() => this.updateFilterStateAndPageLocation(4)}>
+            <svg height="20" width="27">
+              <circle cx="10" cy="10" r="10" stroke="black" stroke-width="1" fill="#F40401" />
+            </svg>
+            <span>OUT OF STOCK</span>
+          </div>
+
         </div>
-        {this.renderTiles(this.state.filterState)}
-        <Pagination itemAmount={this.currentTotalAmountOfShoes} newPaginationPage={this.updatePagination} />
+        <div className="tile-container">
+          {this.renderTiles(this.state.filterState)}
+        </div>
+        <div className="pagination-container">
+          <Pagination
+            pageNumber={this.currentPageNumber}
+            itemAmount={this.currentTotalAmountOfShoes}
+            newPaginationPage={this.updatePagination}/>
+        </div>
       </div>
     );
   }
