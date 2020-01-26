@@ -26,6 +26,10 @@ interface IShoe {
 export default class App extends React.Component<any, any> {
   // fix typings here
   private indexesToDisplay: any = [];
+  /**
+   * Based on the filter, the current amount of shoes being paginated.
+   */
+  private currentTotalAmountOfShoes: number = 0;
 
   constructor(props: any) {
     super(props);
@@ -44,28 +48,48 @@ export default class App extends React.Component<any, any> {
    */
   private renderTiles(filterState: number) {
     // We reset this each new render, incase we change our filter.
-    const shoesToDisplayForPage: any = [];
+    let shoesToDisplayForPage: any = [];
 
     if (filterState !== 0) {
-      return mockData.shoes.map((shoe: any, index: number) => {
-        if (filterState === shoe.stockState) {
-          return <ShoeTile key={shoe.id} shoeData={shoe}/>;
+      const filteredShoeList: any = [];
+      // Filter shoes into local array
+      mockData.shoes.forEach(shoe => {
+        if (filterState === shoe.stockState)
+          filteredShoeList.push(shoe);
+      });
+      // As we filter our pagination, we know the total amount of shoes.
+      // Therefore we update our total amount field here, a little bit messy
+      // but feels logical enough.
+      this.currentTotalAmountOfShoes = filteredShoeList.length;
+      shoesToDisplayForPage = this.filterShoesPerPagination(this.indexesToDisplay, filteredShoeList);
+    } else {
+      // Again, I know this is messy but it works well enough :).
+      this.currentTotalAmountOfShoes = mockData.shoes.length;
+      shoesToDisplayForPage = this.filterShoesPerPagination(this.indexesToDisplay, mockData.shoes);
+    }
+
+    return shoesToDisplayForPage.map((shoe: any, index: number) => {
+      return <ShoeTile key={shoe.id} shoeData={shoe}/>;
+    });
+
+  }
+
+  /**
+   * Maps our current page indexes into a filtered paginated list
+   * @param currentIndexArray the current array of indexes we wish to display
+   * @param shoeArray the array to filter
+   */
+  private filterShoesPerPagination(currentIndexArray: any, shoeArray: any): any {
+    const shoesToDisplay: any = [];
+    currentIndexArray.map((shoeIndex: any) => {
+      shoeArray.map((shoe: any, index: any) => {
+        if (shoeIndex === index) {
+          shoesToDisplay.push(shoe);
         }
       });
-    } else {
-      this.indexesToDisplay.map((shoeIndex: any) => {
-        mockData.shoes.map((shoe, index) => {
-          if (shoeIndex === index) {
-            shoesToDisplayForPage.push(shoe);
-          }
-        });
-      });
+    });
 
-      return shoesToDisplayForPage.map((shoe: any, index: number) => {
-          return <ShoeTile key={shoe.id} shoeData={shoe}/>;
-      });
-
-    }
+    return shoesToDisplay;
   }
 
   // Lexical scoping ruined ordinary method declaration here...
@@ -122,7 +146,7 @@ export default class App extends React.Component<any, any> {
           <button onClick={() => this.setState({filterState: 4})}>out of stock</button>
         </div>
         {this.renderTiles(this.state.filterState)}
-        <Pagination itemAmount={mockData.shoes.length} newPaginationPage={this.updatePagination} />
+        <Pagination itemAmount={this.currentTotalAmountOfShoes} newPaginationPage={this.updatePagination} />
       </div>
     );
   }
