@@ -27,7 +27,7 @@ interface IShoe {
 /**
  * Currently we presume all shoes come back successfully, but we would obviously
  * have a clause in a real app for bad prop data and/or have omittable interface properties
- * in our TS prop type(s)
+ * in our TS prop type(s)/typedef(s)
  */
 export default class ShoeTile extends React.Component<IShoe, any> {
 

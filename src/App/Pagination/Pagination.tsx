@@ -1,13 +1,12 @@
 import React from "react";
 
-export default class Pagination extends React.Component<{ itemAmount: number , testFunc: () => void}> {
-    constructor(props: { itemAmount: number, testFunc: () => void}) {
+export default class Pagination extends React.Component
+<{ itemAmount: number , newPaginationPage: (pageNum: number) => void}> {
+    constructor(props: { itemAmount: number, newPaginationPage: (pageNum: number) => void}) {
         super(props);
-
     }
 
-    private getPageAmount(itemAmount: number) {
-        this.props.testFunc()
+    private getPageAmount(itemAmount: number): number[] {
         const amountArr = [];
         let pageNumber = 0;
         for (let i = 0; i < (Math.ceil(itemAmount / 4)); i++) {
@@ -20,7 +19,7 @@ export default class Pagination extends React.Component<{ itemAmount: number , t
         return (
             <div>
                 {this.getPageAmount(this.props.itemAmount).map(pageNumber => {
-                    return <button>{pageNumber}</button>;
+                    return <button onClick={() => this.props.newPaginationPage(pageNumber)}>{pageNumber}</button>;
                 })}
             </div>
         );
